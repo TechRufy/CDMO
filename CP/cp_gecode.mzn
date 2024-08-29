@@ -25,7 +25,10 @@ constraint forall(i in 1..m) (forall(j in 1..k-2) ((P[i,j] != n+1 /\ P[i,j+1] = 
 % objective function
 var int: path_length = max(d);
 
-solve minimize path_length;
+solve
+ :: int_search(P, first_fail, indomain_random)
+ :: restart_luby(50) 
+minimize path_length;
 
 % print output 
 output [
