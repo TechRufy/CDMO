@@ -3,6 +3,30 @@ from functools import cmp_to_key
 from pulp import *
 
 
+def sol_to_json(solver, solution, istance, time, distance):
+
+    if time >= 300:
+        optimal = False
+    else:
+        optimal = True
+
+    diz = {
+        solver: {
+            "time": int(time),
+            "optimal": optimal,
+            "obj": distance,
+            "sol": solution,
+        }
+    }
+
+    with open("res/MIP/" + istance + "json", "w") as outfile:
+        json.dump(diz, outfile)
+        name = istance + "json"
+        print(f"\nJSON file {name} created successfully")
+
+    pass
+
+
 def ordinamento(l: list):
     copia = l.copy()
     for i in range(len(copia)):
@@ -17,7 +41,7 @@ def ordinamento(l: list):
 
 # import of an instance
 def import_instance(path):
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         lines = f.readlines()
 
         m = int(lines[0].strip())
@@ -32,13 +56,18 @@ def import_instance(path):
 
 # Define problem parameters
 
+
 def Courier_problem(istanza):
     m, n, l, s, D = import_instance(istanza)
 
     # Create decision variables
-    choices = LpVariable.dicts("choices", (range(n + 1), range(n + 1), range(m)), cat=LpBinary, lowBound=0)
+    choices = LpVariable.dicts(
+        "choices", (range(n + 1), range(n + 1), range(m)), cat=LpBinary, lowBound=0
+    )
     longest = LpVariable("longest", lowBound=0, cat=LpInteger)
-    c = LpVariable.dicts("c", (range(n + 1), range(m)), lowBound=0, upBound=n, cat=LpInteger)
+    c = LpVariable.dicts(
+        "c", (range(n + 1), range(m)), lowBound=0, upBound=n, cat=LpInteger
+    )
     # Create problem instance
     prob = LpProblem("MCP", LpMinimize)
 
@@ -46,7 +75,10 @@ def Courier_problem(istanza):
     prob += longest
 
     # ensure that longest is the max of all the distance
-    d = [lpSum([D[i][j] * choices[i][j][k] for i in range(n + 1) for j in range(n + 1)]) for k in range(m)]
+    d = [
+        lpSum([D[i][j] * choices[i][j][k] for i in range(n + 1) for j in range(n + 1)])
+        for k in range(m)
+    ]
 
     # ensure that longest is the maximum of the distance
     for k in range(m):
@@ -78,24 +110,41 @@ def Courier_problem(istanza):
             for j in range(n):
                 if i != j:
                     if i == n:
-                        prob += choices[i][j][k] <= lpSum([choices[j][h][k] for h in range(n + 1) if h != j])
+                        prob += choices[i][j][k] <= lpSum(
+                            [choices[j][h][k] for h in range(n + 1) if h != j]
+                        )
                     else:
-                        prob += choices[i][j][k] <= lpSum([choices[j][h][k] for h in range(n + 1) if h != j and h != i])
+                        prob += choices[i][j][k] <= lpSum(
+                            [
+                                choices[j][h][k]
+                                for h in range(n + 1)
+                                if h != j and h != i
+                            ]
+                        )
 
     # ensure that the item are below the load limit
     for k in range(m):
-        prob += lpSum([s[i] * choices[i][j][k] for i in range(n) for j in range(n + 1)]) <= l[k]
+        prob += (
+            lpSum([s[i] * choices[i][j][k] for i in range(n) for j in range(n + 1)])
+            <= l[k]
+        )
 
     # subtour elimination
     for k in range(m):
         for i in range(n):
             for j in range(n):
                 if i != j:
-                    prob += c[i][k] + choices[i][j][k] <= c[j][k] + (n - 1) * (1 - choices[i][j][k])
+                    prob += c[i][k] + choices[i][j][k] <= c[j][k] + (n - 1) * (
+                        1 - choices[i][j][k]
+                    )
 
     time_limit_in_seconds = 60 * 5
 
+    start_time = time()
+
     prob.solve(PULP_CBC_CMD(msg=True, timeLimit=time_limit_in_seconds))
+
+    elapsed_time = time() - start_time
 
     # Solve the problem
 
@@ -109,7 +158,15 @@ def Courier_problem(istanza):
                     solution[k].append((i, j))
                 else:
                     pass
-    print("instance number : ", istanza[18:20])
+    print("time elapsed : ", elapsed_time)
+    print("instance number : ", istanza[17:19])
     print(LpStatus[prob.status])
     print("Optimal Solution: ", ordinamento(solution))
     print("Total distance:", value(prob.objective))
+    sol_to_json(
+        "Pulp_CBC",
+        ordinamento(solution),
+        istanza[18:20],
+        elapsed_time,
+        value(prob.objective),
+    )
