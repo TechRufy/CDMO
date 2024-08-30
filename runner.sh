@@ -1,4 +1,3 @@
-
 #!/bin/bash
 while :  
 do
@@ -15,7 +14,16 @@ do
         do
             echo "instance number $i"
             echo " "
-            minizinc --solver gecode ./CP/cp_gecode.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time --json-stream >> "CP/temp_res/res_$i.json"
+
+            > "CP/temp_res/res_gecode_$i.txt"
+
+            echo "model : cp_$solver.mzn" >> "CP/temp_res/res_gecode_$i.txt"
+            echo "solver : $solver" >> "CP/temp_res/res_gecode_$i.txt"
+            echo "instance : $i" >> "CP/temp_res/res_gecode_$i.txt"
+
+            echo "--solver gecode ./CP/cp_gecode.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+            minizinc --solver gecode ./CP/cp_gecode.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_gecode_$i.txt"
         done
 
         echo "CP instances with chuffed"
@@ -24,7 +32,16 @@ do
         do
             echo "instance number $i"
             echo " "
-            minizinc --solver chuffed ./CP/cp_chuffed.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time --json-stream >> "CP/temp_res/res_$i.json"
+
+            > "CP/temp_res/res_chuffed_$i.txt"
+
+            echo "model : cp_$solver.mzn" >> "CP/temp_res/res_chuffed_$i.txt"
+            echo "solver : $solver" >> "CP/temp_res/res_chuffed_$i.txt"
+            echo "instance : $i" >> "CP/temp_res/res_chuffed_$i.txt"
+
+            echo "--solver chuffed ./CP/cp_chuffed.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+            minizinc --solver chuffed ./CP/cp_chuffed.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_chuffed_$i.txt"
 
         done
 
@@ -48,13 +65,28 @@ do
             do
                 echo "instance number $i"
                 echo " "
-                minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time --json-stream >> "CP/temp_res/res_$i.json"
+
+                > "CP/temp_res/res_${solver}_${i}.txt"
+
+                echo "model : cp_$solver.mzn" >> "CP/temp_res/res_${solver}_${i}.txt"
+                echo "solver : $solver" >> "CP/temp_res/res_${solver}_${i}.txt"
+                echo "instance : $i" >> "CP/temp_res/res_${solver}_${i}.txt"
+
+                echo "minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+                minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_${i}.txt"
             done
         else
             echo "which solver ? chuffed or gecode \n"
             read -p " " solver
 
-            minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000  --output-time --json-stream >> "CP/temp_res/res_$i.json"
+            > "CP/temp_res/res_${solver}_${input}.txt"
+
+            echo "model : cp_$solver.mzn" >> "CP/temp_res/res_${solver}_${input}.txt"
+            echo "solver : $solver" >> "CP/temp_res/res_${solver}_${input}.txt"
+            echo "instance : $input" >> "CP/temp_res/res_${solver}_${input}.txt"
+
+            minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000  --output-time >> "CP/temp_res/res_${solver}_${input}.txt"
         fi
 
 
