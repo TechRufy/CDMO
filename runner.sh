@@ -7,8 +7,45 @@ do
 
     if [ "$input" = "all" ];
     then
-        echo "CP instances with Gecode"
+        echo "CP instances with Gecode with SB"
         echo " "
+
+        for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21
+        do
+            echo "instance number $i"
+            echo " "
+
+            > "CP/temp_res/res_gecode_sb_$i.txt"
+
+            echo "model : cp_${solver}_sb.mzn" >> "CP/temp_res/res_gecode_sb_$i.txt"
+            echo "solver : $solver" >> "CP/temp_res/res_gecode_sb_$i.txt"
+            echo "instance : $i" >> "CP/temp_res/res_gecode_sb_$i.txt"
+
+            echo "--solver gecode ./CP/cp_gecode_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+            minizinc --solver gecode ./CP/cp_gecode_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_gecode_sb_$i.txt"
+        done
+
+        echo "CP instances with chuffed with SB"
+
+        for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21
+        do
+            echo "instance number $i"
+            echo " "
+
+            > "CP/temp_res/res_chuffed_sb_$i.txt"
+
+            echo "model : cp_$solver_sb.mzn" >> "CP/temp_res/res_chuffed_sb_$i.txt"
+            echo "solver : $solver" >> "CP/temp_res/res_chuffed_sb_$i.txt"
+            echo "instance : $i" >> "CP/temp_res/res_chuffed_sb_$i.txt"
+
+            echo "--solver chuffed ./CP/cp_chuffed_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+            minizinc --solver chuffed ./CP/cp_chuffed_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_chuffed_sb_$i.txt"
+
+        done
+
+        echo "CP instances with Gecode without SB"
 
         for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21
         do
@@ -24,9 +61,10 @@ do
             echo "--solver gecode ./CP/cp_gecode.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
 
             minizinc --solver gecode ./CP/cp_gecode.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_gecode_$i.txt"
+
         done
 
-        echo "CP instances with chuffed"
+        echo "CP instances with chuffed without SB"
 
         for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21
         do
@@ -45,9 +83,15 @@ do
 
         done
 
+
         echo "MIP instances"
 
         python3 ./MIP/main.py
+
+        echo "SAT instances"
+
+        python3 ./SAT/main.py
+
     fi
 
     if [ "$input" = "CP" ];
@@ -58,35 +102,73 @@ do
 
         if [ "$input" = "all" ];
         then
+
+
             echo "which solver ? chuffed or gecode \n"
             read -p " " solver
+
+            echo "with SB or without ? SB or NoSB  \n"
+            read -p " " SB
 
             for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21
             do
                 echo "instance number $i"
                 echo " "
 
-                > "CP/temp_res/res_${solver}_${i}.txt"
+                if [ "$SB" = "SB" ]
+                then
 
-                echo "model : cp_$solver.mzn" >> "CP/temp_res/res_${solver}_${i}.txt"
-                echo "solver : $solver" >> "CP/temp_res/res_${solver}_${i}.txt"
-                echo "instance : $i" >> "CP/temp_res/res_${solver}_${i}.txt"
+                    > "CP/temp_res/res_${solver}_sb_${i}.txt"
 
-                echo "minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+                    echo "model : cp_${solver}_sb.mzn" >> "CP/temp_res/res_${solver}_sb_${i}.txt"
+                    echo "solver : $solver" >> "CP/temp_res/res_${solver}_sb_${i}.txt"
+                    echo "instance : $i" >> "CP/temp_res/res_${solver}_sb_${i}.txt"
 
-                minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_${i}.txt"
+                    echo "minizinc --solver $solver ./CP/cp_${solver}_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+                    minizinc --solver $solver ./CP/cp_${solver}_sb.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_sb_${i}.txt"
+                else  
+                    > "CP/temp_res/res_${solver}_${i}.txt"
+
+                    echo "model : cp_${solver}.mzn" >> "CP/temp_res/res_${solver}_${i}.txt"
+                    echo "solver : $solver" >> "CP/temp_res/res_${solver}_${i}.txt"
+                    echo "instance : $i" >> "CP/temp_res/res_${solver}_${i}.txt"
+
+                    echo "minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time"
+
+                    minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$i.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_${i}.txt"
+                fi
             done
         else
             echo "which solver ? chuffed or gecode \n"
             read -p " " solver
 
-            > "CP/temp_res/res_${solver}_${input}.txt"
+            echo "with SB or without ? SB or NoSB  \n"
+            read -p " " SB
 
-            echo "model : cp_$solver.mzn" >> "CP/temp_res/res_${solver}_${input}.txt"
-            echo "solver : $solver" >> "CP/temp_res/res_${solver}_${input}.txt"
-            echo "instance : $input" >> "CP/temp_res/res_${solver}_${input}.txt"
+            if [ "$SB" = "SB" ]
+            then
 
-            minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000  --output-time >> "CP/temp_res/res_${solver}_${input}.txt"
+                > "CP/temp_res/res_${solver}_sb_${input}.txt"
+
+                echo "model : cp_${solver}_sb.mzn" >> "CP/temp_res/res_${solver}_sb_${input}.txt"
+                echo "solver : $solver" >> "CP/temp_res/res_${solver}_sb_${input}.txt"
+                echo "instance : $input" >> "CP/temp_res/res_${solver}_sb_${input}.txt"
+
+                echo "minizinc --solver $solver ./CP/cp_${solver}_sb.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000 --output-time"
+
+                minizinc --solver $solver ./CP/cp_${solver}_sb.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_sb_${input}.txt"
+            else  
+                > "CP/temp_res/res_${solver}_${input}.txt"
+
+                echo "model : cp_${solver}.mzn" >> "CP/temp_res/res_${solver}_${input}.txt"
+                echo "solver : $solver" >> "CP/temp_res/res_${solver}_${input}.txt"
+                echo "instance : $input" >> "CP/temp_res/res_${solver}_${input}.txt"
+
+                echo "minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000 --output-time"
+
+                minizinc --solver $solver ./CP/cp_$solver.mzn ./CP/Instances/inst$input.dzn --solver-time-limit 300000 --output-time >> "CP/temp_res/res_${solver}_${input}.txt"
+            fi
         fi
 
 
@@ -99,7 +181,7 @@ do
 
     if [ "$input" = "SAT" ];
     then
-        echo not implemented, sorry UwU
+        python3 ./SAT/main.py
     fi
 
 done

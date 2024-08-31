@@ -158,6 +158,7 @@ def Courier_problem(istanza):
                     solution[k].append((i, j))
                 else:
                     pass
+
     print("time elapsed : ", elapsed_time)
     print("instance number : ", istanza[17:19])
     print(LpStatus[prob.status])

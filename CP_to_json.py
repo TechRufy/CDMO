@@ -14,6 +14,9 @@ for filename in os.listdir("CP/temp_res"):
             distance = 0
             time = 0
             for line in file.readlines():
+                if line.startswith("model"):
+                    model = line.split(":")[-1].strip()
+                    continue
                 if line.startswith("solver"):
                     solver = line.split(":")[-1].strip()
                     continue
@@ -33,7 +36,7 @@ for filename in os.listdir("CP/temp_res"):
                 if line.startswith("% time"):
                     time = int(float(line[1:-3].split(":")[-1]))
                     continue
-            megadict[int(instance)][solver] = {
+            megadict[int(instance)][solver + " " + model] = {
                 "time": time if time <= 300 else 300,
                 "optimal": True if time < 300 else False,
                 "obj": int(distance),
