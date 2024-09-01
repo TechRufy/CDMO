@@ -312,17 +312,17 @@ def multiple_couriers_problem_sat(m, n, l, s, D, encoding):
                 if j != k:
                     opt.add(Implies(arcs[j][k], c[j][i] < c[k][i]))
 
-    for i in range(m - 1):
-        for j in range(i + 1, m):
-            if l[i] == l[j]:
-                opt.add(
-                    precedes(
-                        [arcs[h][t] * b[h][i] for h in range(n) for t in range(n + 1)]
-                        + [arcs[n][t] * b[t][i] for t in range(n)],
-                        [arcs[h][t] * b[h][j] for h in range(n) for t in range(n + 1)]
-                        + [arcs[n][t] * b[t][j] for t in range(n)],
-                    )
-                )
+    for k1 in range(m - 1):
+        for k2 in range(k1 + 1, m):
+            if l[k1] == l[k2]:
+                for i in range(n):
+                    for j in range(i + 1, n):
+                        opt.add(
+                            Implies(
+                                And(arcs[0][j], b[j][k1]),
+                                Not(And(arcs[0][i], b[i][k2])),
+                            )
+                        )
     # minimizing the objctive function
     max_d = Int("max_d")
     max_d = symMax(d)
@@ -335,7 +335,7 @@ def multiple_couriers_problem_sat(m, n, l, s, D, encoding):
         elapsed_time = time.time() - start_time
         return opt.model(), elapsed_time
     else:
-        return "unsat"
+        return "unsat", 0
 
 
 def SAT_courier(istance, encoding):
