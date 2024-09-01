@@ -49,7 +49,7 @@ for filename in os.listdir("CP/temp_res"):
                 "time": time if time <= 300 else 300,
                 "optimal": True if (time < 300 and len(sol) > 0) else False,
                 "obj": int(distance),
-                "sol": sol if len(sol) > 0 else "UNKNOW",
+                "sol": sol if len(sol) > 0 else [],
             }
 
 for keys in megadict.keys():

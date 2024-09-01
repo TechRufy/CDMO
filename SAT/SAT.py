@@ -34,8 +34,6 @@ def sol_to_json(solver, solution, istance, time, distance):
         }
     }
 
-    print(os.listdir("res/SAT"))
-
     if os.listdir("res/SAT").__contains__(str(int(istance.strip())) + ".json"):
         with open("res/SAT/" + str(int(istance.strip())) + ".json", "r+") as outfile:
             dic = json.load(outfile)
@@ -43,7 +41,7 @@ def sol_to_json(solver, solution, istance, time, distance):
                 "time": int(time),
                 "optimal": optimal,
                 "obj": distance,
-                "sol": solution,
+                "sol": solution if len(solution) > 0 else [],
             }
             outfile.seek(0)
             json.dump(dic, outfile)
@@ -307,10 +305,13 @@ def multiple_couriers_problem_sat(m, n, l, s, D, encoding):
     max_d = Int("max_d")
     max_d = symMax(d)
 
+    start_time = time.time()
+
     opt.minimize(max_d)
 
     if opt.check() != unsat:
-        return opt.model()
+        elapsed_time = time.time() - start_time
+        return opt.model(), elapsed_time
     else:
         return "unsat"
 
@@ -320,11 +321,12 @@ def SAT_courier(istance, encoding):
     m, n, l, s, D = import_instance(istance)
 
     # solve the problem
-    start_time = time.time()
 
-    model = multiple_couriers_problem_sat(m, n, l, s, D, encoding)
+    print(f"running instance: {istance}")
 
-    elapsed_time = time.time() - start_time
+    model, elapsed_time = multiple_couriers_problem_sat(m, n, l, s, D, encoding)
+
+    print(f"time passed : {int(elapsed_time)}")
 
     if model != "unsat":
         solution = sorted(
@@ -379,7 +381,7 @@ def SAT_courier(istance, encoding):
                     int(paths[i][j].split("_")[2])
                 ]
 
-        print(max(d))
+        print(f"value solution: {max(d)}")
 
         sol = [
             [

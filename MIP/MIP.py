@@ -15,7 +15,7 @@ def sol_to_json(solver, solution, istance, time, distance):
             "time": int(time),
             "optimal": optimal,
             "obj": distance,
-            "sol": solution,
+            "sol": solution if len(solution) > 0 else [],
         }
     }
 
@@ -61,12 +61,12 @@ def Courier_problem(istanza):
     m, n, l, s, D = import_instance(istanza)
 
     # Create decision variables
-    choices = LpVariable.dicts(
-        "choices", (range(n + 1), range(n + 1), range(m)), cat=LpBinary, lowBound=0
+    arcs = LpVariable.dicts(
+        "arcs", (range(n + 1), range(n + 1), range(m)), cat=LpBinary, lowBound=0
     )
     longest = LpVariable("longest", lowBound=0, cat=LpInteger)
     c = LpVariable.dicts(
-        "c", (range(n + 1), range(m)), lowBound=0, upBound=n, cat=LpInteger
+        "c", (range(n), range(m)), lowBound=0, upBound=n, cat=LpInteger
     )
     # Create problem instance
     prob = LpProblem("MCP", LpMinimize)
@@ -76,7 +76,7 @@ def Courier_problem(istanza):
 
     # ensure that longest is the max of all the distance
     d = [
-        lpSum([D[i][j] * choices[i][j][k] for i in range(n + 1) for j in range(n + 1)])
+        lpSum([D[i][j] * arcs[i][j][k] for i in range(n + 1) for j in range(n + 1)])
         for k in range(m)
     ]
 
@@ -86,23 +86,23 @@ def Courier_problem(istanza):
 
     # ensure that there is only one edge starting from an item by limiting to 1 the number of 1 in a rows
     for i in range(n):
-        prob += lpSum([choices[i][j] for j in range(n + 1) if i != j]) == 1
+        prob += lpSum([arcs[i][j] for j in range(n + 1) if i != j]) == 1
 
     # ensure that there is only one edge going in an item by limiting to 1 the number of 1 in a columns
     for i in range(n):
-        prob += lpSum([choices[j][i] for j in range(n + 1) if i != j]) == 1
+        prob += lpSum([arcs[j][i] for j in range(n + 1) if i != j]) == 1
 
     # ensure that each courier start only one time from the origin
     for k in range(m):
-        prob += lpSum([choices[n][j][k] for j in range(n)]) == 1
+        prob += lpSum([arcs[n][j][k] for j in range(n)]) == 1
 
     # ensure that each courier ends only one time in the origin
     for k in range(m):
-        prob += lpSum([choices[j][n][k] for j in range(n)]) == 1
+        prob += lpSum([arcs[j][n][k] for j in range(n)]) == 1
 
     # no arc between the same item
     for i in range(n + 1):
-        prob += lpSum(choices[i][i]) == 0
+        prob += lpSum(arcs[i][i]) == 0
 
     # Ensures that paths are connected
     for k in range(m):
@@ -110,22 +110,18 @@ def Courier_problem(istanza):
             for j in range(n):
                 if i != j:
                     if i == n:
-                        prob += choices[i][j][k] <= lpSum(
-                            [choices[j][h][k] for h in range(n + 1) if h != j]
+                        prob += arcs[i][j][k] <= lpSum(
+                            [arcs[j][h][k] for h in range(n + 1) if h != j]
                         )
                     else:
-                        prob += choices[i][j][k] <= lpSum(
-                            [
-                                choices[j][h][k]
-                                for h in range(n + 1)
-                                if h != j and h != i
-                            ]
+                        prob += arcs[i][j][k] <= lpSum(
+                            [arcs[j][h][k] for h in range(n + 1) if h != j and h != i]
                         )
 
     # ensure that the item are below the load limit
     for k in range(m):
         prob += (
-            lpSum([s[i] * choices[i][j][k] for i in range(n) for j in range(n + 1)])
+            lpSum([s[i] * arcs[i][j][k] for i in range(n) for j in range(n + 1)])
             <= l[k]
         )
 
@@ -134,8 +130,8 @@ def Courier_problem(istanza):
         for i in range(n):
             for j in range(n):
                 if i != j:
-                    prob += c[i][k] + choices[i][j][k] <= c[j][k] + (n - 1) * (
-                        1 - choices[i][j][k]
+                    prob += c[i][k] + arcs[i][j][k] <= c[j][k] + (n - 1) * (
+                        1 - arcs[i][j][k]
                     )
 
     time_limit_in_seconds = 60 * 5
@@ -154,7 +150,7 @@ def Courier_problem(istanza):
     for k in range(m):
         for i in range(n + 1):
             for j in range(n + 1):
-                if choices[i][j][k].varValue > 0:
+                if arcs[i][j][k].varValue > 0:
                     solution[k].append((i, j))
                 else:
                     pass

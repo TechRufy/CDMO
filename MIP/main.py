@@ -7,7 +7,7 @@ while True:
     if Input == "all":
         istanze_function = [
             "MIP/instance/inst0" + str(i) + ".dat" for i in range(1, 10)
-        ] + ["MIP/instance/inst" + str(i) + ".dat" for i in [10, 13]]
+        ] + ["MIP/instance/inst" + str(i) + ".dat" for i in [10]]
         for istanza in istanze_function:
             Courier_problem(istanza)
         break
