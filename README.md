@@ -1,11 +1,11 @@
 # CDMO Project
 
 This is a project realized for the exam of "Combinatorial Decision Making and Optimization".
-The member of the group are:
+## The member of the group are:
 
-1 - Alberto genovese
-2 - Alessandro Tutone
-3 - Elia Ceccolini
+- Alberto genovese
+- Alessandro Tutone
+- Elia Ceccolini
 
 # Building the project
 
@@ -27,7 +27,7 @@ After that you will be in the shell of the container.
 After you enter the shell enter the comand
 
 ```
-./runer.sh
+./runner.sh
 ```
 
 After that you will enter a prompt sccript that will guide you through the running of the various instances for the various model.
