@@ -74,6 +74,17 @@ def at_least_one_seq(bool_vars):
     return at_least_one_np(bool_vars)
 
 
+def precedes(a1, a2):
+    if not a1:
+        return True
+    if not a2:
+        return False
+    return Or(
+        And(a1[0] == True, a2[0] == False),
+        And(a1[0] == a2[0], precedes(a1[1:], a2[1:])),
+    )
+
+
 def at_most_one_seq(bool_vars, name):
     constraints = []
     n = len(bool_vars)
@@ -301,6 +312,17 @@ def multiple_couriers_problem_sat(m, n, l, s, D, encoding):
                 if j != k:
                     opt.add(Implies(arcs[j][k], c[j][i] < c[k][i]))
 
+    for i in range(m - 1):
+        for j in range(i + 1, m):
+            if l[i] == l[j]:
+                opt.add(
+                    precedes(
+                        [arcs[h][t] * b[h][i] for h in range(n) for t in range(n + 1)]
+                        + [arcs[n][t] * b[t][i] for t in range(n)],
+                        [arcs[h][t] * b[h][j] for h in range(n) for t in range(n + 1)]
+                        + [arcs[n][t] * b[t][j] for t in range(n)],
+                    )
+                )
     # minimizing the objctive function
     max_d = Int("max_d")
     max_d = symMax(d)

@@ -54,9 +54,6 @@ def import_instance(path):
     return m, n, l, s, D
 
 
-# Define problem parameters
-
-
 def Courier_problem(istanza):
     m, n, l, s, D = import_instance(istanza)
 
@@ -133,6 +130,13 @@ def Courier_problem(istanza):
                     prob += c[i][k] + arcs[i][j][k] <= c[j][k] + (n - 1) * (
                         1 - arcs[i][j][k]
                     )
+
+    for i in range(m):
+        for j in range(m):
+            if l[i] == l[j] and i != j:
+                prob += lpSum(
+                    [arcs[h][t][i] for h in range(n + 1) for t in range(n + 1)]
+                ) <= lpSum([arcs[h][t][j] for h in range(n + 1) for t in range(n + 1)])
 
     time_limit_in_seconds = 60 * 5
 

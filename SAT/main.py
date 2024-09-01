@@ -26,6 +26,6 @@ while True:
     else:
         istanza = "MIP/instance/inst" + Input + ".dat"
         encoding = input(
-            "select wich encoding between: naive = np , bitwise = bw, sequential = seq \n"
+            "select which encoding between: naive = np , bitwise = bw, sequential = seq \n"
         )
         SAT_courier(istanza, encoding)
