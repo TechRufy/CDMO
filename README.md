@@ -1,4 +1,4 @@
-#CDMO Project
+# CDMO Project
 
 This is a project realized for the exam of "Combinatorial Decision Making and Optimization".
 The member of the group are:
@@ -7,7 +7,7 @@ The member of the group are:
 2 - Alessandro Tutone
 3 - Elia Ceccolini
 
-#Building the project
+# Building the project
 
 The project can be run through Docker, first download all the file of the project, than run the docker file in the directory with the comand:
 
@@ -22,7 +22,7 @@ docker run -it cdmo-app
 
 After that you will be in the shell of the container.
 
-#Running the project
+# Running the project
 
 After you enter the shell enter the comand
 
