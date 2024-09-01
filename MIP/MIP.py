@@ -21,7 +21,7 @@ def sol_to_json(solver, solution, istance, time, distance):
 
     with open("res/MIP/" + str(int(istance.strip())) + ".json", "w") as outfile:
         json.dump(diz, outfile)
-        name = istance + "json"
+        name = istance + ".json"
         print(f"\nJSON file {name} created successfully")
 
     pass
@@ -167,7 +167,7 @@ def Courier_problem(istanza):
     sol_to_json(
         "Pulp_CBC",
         ordinamento(solution),
-        istanza[17:20],
+        istanza[17:19],
         elapsed_time,
         value(prob.objective),
     )

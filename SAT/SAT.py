@@ -34,6 +34,8 @@ def sol_to_json(solver, solution, istance, time, distance):
         }
     }
 
+    print(os.listdir("res/SAT"))
+
     if os.listdir("res/SAT").__contains__(str(int(istance.strip())) + ".json"):
         with open("res/SAT/" + str(int(istance.strip())) + ".json", "r+") as outfile:
             dic = json.load(outfile)
@@ -45,11 +47,11 @@ def sol_to_json(solver, solution, istance, time, distance):
             }
             outfile.seek(0)
             json.dump(dic, outfile)
-        print(f"\nJ result added successfully")
+        print(f"\n result added successfully")
     else:
-        with open("res/SAT/" + istance + "json", "w") as outfile:
+        with open("res/SAT/" + str(int(istance.strip())) + ".json", "w") as outfile:
             json.dump(diz, outfile)
-            name = istance + "json"
+            name = istance + ".json"
             print(f"\nJSON file {name} created successfully")
 
     pass
@@ -390,7 +392,7 @@ def SAT_courier(istance, encoding):
         sol_to_json(
             "SAT_" + encoding,
             ordinamento(sol),
-            istance[17:20],
+            istance[17:19],
             elapsed_time,
             max(d),
         )
