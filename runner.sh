@@ -184,7 +184,7 @@ do
         python3 ./SAT/main.py
     fi
 
-    if [ "$input" = "CP_to_json"]
+    if [ "$input" = "CP_to_json" ]
     then
         python3 CP_to_json.py
     fi
