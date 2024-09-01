@@ -11,15 +11,14 @@ The member of the group are:
 
 The project can be run through Docker, first download all the file of the project, than run the docker file in the directory with the comand:
 
-'''
+```
 docker compose up --build
-'''
+```
 
 Then run the container with :
-
-'''
+```
 docker run -it cdmo-app
-'''
+```
 
 After that you will be in the shell of the container.
 
@@ -27,16 +26,16 @@ After that you will be in the shell of the container.
 
 After you enter the shell enter the comand
 
-'''
+```
 ./runer.sh
-'''
+```
 
 After that you will enter a prompt sccript that will guide you through the running of the various instances for the various model.
 
 MIP and SAT model will automatically create the json file , while CP, after running the istance, you will need to write
 
-'''
+```
 CP_to_json
-'''
+```
 
 in the shell program to run the script that will convert the CP result in the json.
