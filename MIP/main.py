@@ -10,7 +10,6 @@ while True:
         ] + ["MIP/instance/inst" + str(i) + ".dat" for i in [10, 13]]
         for istanza in istanze_function:
             Courier_problem(istanza)
-            input("press enter for next instances\n")
         break
 
     if Input == "exit":

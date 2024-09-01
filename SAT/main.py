@@ -9,13 +9,10 @@ while True:
             "MIP/instance/inst0" + str(i) + ".dat" for i in range(1, 10)
         ] + ["MIP/instance/inst" + str(i) + ".dat" for i in [10, 13]]
 
-        encoding = input(
-            "select wich encoding between: naive = np , bitwise = bw, sequential = seq \n"
-        )
+        for encoding in ["np", "bw", "seq"]:
+            for istanza in istanze_function:
+                SAT_courier(istanza, encoding)
 
-        for istanza in istanze_function:
-            SAT_courier(istanza, encoding)
-            input("press enter for next instances\n")
         break
 
     if Input == "exit":
